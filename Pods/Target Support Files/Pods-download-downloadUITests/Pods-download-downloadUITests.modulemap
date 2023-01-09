@@ -1,0 +1,6 @@
+framework module Pods_download_downloadUITests {
+  umbrella header "Pods-download-downloadUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

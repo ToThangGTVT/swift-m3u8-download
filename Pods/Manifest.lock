@@ -1,0 +1,20 @@
+PODS:
+  - Alamofire (5.6.4)
+  - M3U8Kit (1.0.2)
+
+DEPENDENCIES:
+  - Alamofire
+  - M3U8Kit
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - M3U8Kit
+
+SPEC CHECKSUMS:
+  Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
+  M3U8Kit: 6a0d55ba2e62e146f34f53276d7c3aa78ed4fc00
+
+PODFILE CHECKSUM: 7e001cbc4f5113f294348fc8c30986eec8ce573a
+
+COCOAPODS: 1.11.3
