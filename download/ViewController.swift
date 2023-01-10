@@ -11,6 +11,8 @@ import AVFoundation
 
 class ViewController: UIViewController {
     
+    let player = AVPlayer()
+    
     @IBOutlet weak var playerView: UIView!
     let downloadManager = DownloadManager.share
     
@@ -22,13 +24,8 @@ class ViewController: UIViewController {
         playerView.layer.addSublayer(playerLayer)
         playerLayer.frame = self.playerView.bounds
         playerLayer.videoGravity = .resizeAspect
-        
-        var list =  UserDefaults.standard.array(forKey: "abc") as? [String] ?? []
-        let playerItems = list.map(transformUrlToAsset)
-        let playerQueue = AVQueuePlayer(items: playerItems)
-        playerLayer.player = playerQueue
-        
-        playerQueue.play()
+
+        playerLayer.player = player
     }
     
     private func transformUrlToAsset(url: String) -> AVPlayerItem {
@@ -44,7 +41,8 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: DownloadManagerDelegate {
-    func didDownloadDone(fileName: String) {
-        print("xxxxxx")
+    func didDownloadDone(url: URL) {
+        player.replaceCurrentItem(with: AVPlayerItem(url: url))
+        player.play()
     }
 }

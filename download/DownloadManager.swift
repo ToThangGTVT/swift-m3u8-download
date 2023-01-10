@@ -11,7 +11,7 @@ import AVFoundation
 import mobileffmpeg
 
 protocol DownloadManagerDelegate: AnyObject {
-    func didDownloadDone(fileName: String)
+    func didDownloadDone(url: URL)
 }
 
 protocol DownloadManagerInteface {
@@ -26,7 +26,7 @@ class DownloadManager: DownloadManagerInteface {
     
     weak var deleagate: DownloadManagerDelegate?
     let dispatchGroup = DispatchGroup()
-    let documentsDirectoryURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+    let documentsDirectoryURL = try? FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 
     
     func downloadFile(m3u8_url url: String, indentify: String) {
@@ -44,9 +44,12 @@ class DownloadManager: DownloadManagerInteface {
         }
         dispatchGroup.wait()
 
-        mergeTs2Mp4(segementDownloadedUrl: segementDownloaded, destinationFile: (documentsDirectoryURL?.appendingPathComponent("\(UUID.init().uuidString)-test.mp4"))!)
+        let destinationFile = documentsDirectoryURL?.appendingPathComponent("\(UUID.init().uuidString).mp4")
+        mergeTs2Mp4(segementDownloadedUrl: segementDownloaded, destinationFile: destinationFile!)
         removeAllTsAfterDownload(urls: segementDownloaded)
-        deleagate?.didDownloadDone(fileName: "fileName")
+        if let destinationFile = destinationFile {
+            deleagate?.didDownloadDone(url: destinationFile)
+        }
     }
     
     private func getSegmentList(url: String) -> M3U8SegmentInfoList? {
