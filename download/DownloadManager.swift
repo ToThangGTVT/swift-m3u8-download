@@ -7,6 +7,7 @@
 
 import Foundation
 import M3U8Kit
+import TS2MP4
 
 protocol DownloadManagerDelegate: AnyObject {
     func didDownloadDone(fileName: String)
@@ -59,6 +60,15 @@ class DownloadManager: DownloadManagerInteface {
             print("User creation failed with error: \(error)")
         }
         return M3U8SegmentInfoList()
+    }
+    
+    private func mergeTs2Mp4(segementDownloadedUrl: [String]) {
+        let tsAssetList = segementDownloadedUrl.map { KMMediaAsset.asset(with: URL(string: $0), with: .TS) }
+        let tsToMP4ExportSession = KMMediaAssetExportSession(inputAssets: tsAssetList)
+        
+        let documentsDirectoryURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let mp4FileURL = documentsDirectoryURL?.appendingPathComponent("test.mp4")
+        tsToMP4ExportSession?.outputAssets = [mp4FileURL]
     }
     
     private func download(url: URL, index: UInt, indentify: String, completion: @escaping (_ path: String) -> Void) {

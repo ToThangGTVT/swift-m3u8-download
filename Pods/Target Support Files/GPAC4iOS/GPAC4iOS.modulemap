@@ -1,0 +1,6 @@
+framework module GPAC4iOS {
+  umbrella header "GPAC4iOS-umbrella.h"
+
+  export *
+  module * { export * }
+}
