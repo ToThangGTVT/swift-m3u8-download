@@ -114,6 +114,7 @@
 #import "../src/terminal/input_sensor.h"
 #import "../src/terminal/media_control.h"
 #import "../src/terminal/media_memory.h"
+#import "../src/utils/internal.h"
 #import "../src/utils/module_wrap.h"
 #import "../src/utils/zutil.h"
 

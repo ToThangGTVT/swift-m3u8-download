@@ -1,28 +1,40 @@
 PODS:
   - Alamofire (5.6.4)
-  - GPAC4iOS (0.2.1)
+  - GPAC4iOS (0.2.2)
   - M3U8Kit (1.0.2)
-  - TS2MP4 (0.2.1):
-    - GPAC4iOS (= 0.2.1)
+  - TS2MP4 (0.2.2)
 
 DEPENDENCIES:
   - Alamofire
+  - GPAC4iOS (from `https://github.com/Keemotion/GPAC4iOS.git`)
   - M3U8Kit
-  - TS2MP4
+  - TS2MP4 (from `https://github.com/Keemotion/TS2MP4.git`)
 
 SPEC REPOS:
   trunk:
     - Alamofire
-    - GPAC4iOS
     - M3U8Kit
-    - TS2MP4
+
+EXTERNAL SOURCES:
+  GPAC4iOS:
+    :git: https://github.com/Keemotion/GPAC4iOS.git
+  TS2MP4:
+    :git: https://github.com/Keemotion/TS2MP4.git
+
+CHECKOUT OPTIONS:
+  GPAC4iOS:
+    :commit: 22da931b313747e79125f6c2f6a383afd40459eb
+    :git: https://github.com/Keemotion/GPAC4iOS.git
+  TS2MP4:
+    :commit: 69144a803717e2036bb4bde6e779c17d4e0df146
+    :git: https://github.com/Keemotion/TS2MP4.git
 
 SPEC CHECKSUMS:
   Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
-  GPAC4iOS: 81b31a8fae9c1e98fa5e28c2e60932e9f93d82a1
+  GPAC4iOS: e8ed65efa57fbf7da606c997df3adc95dfb907d8
   M3U8Kit: 6a0d55ba2e62e146f34f53276d7c3aa78ed4fc00
-  TS2MP4: 5819f4a91bd1a8e6390becb3d146c3260c205780
+  TS2MP4: d4ce56adf5b871560c17a6295ecb8add60841431
 
-PODFILE CHECKSUM: 537b9a7a821c3245a33ea8e3614b183ee41cf4e7
+PODFILE CHECKSUM: 4849179471e1fa91928a3a86d83e07f405d519ea
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2
