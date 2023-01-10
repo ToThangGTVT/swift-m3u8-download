@@ -1,6 +1,0 @@
-framework module TS2MP4 {
-  umbrella header "TS2MP4-umbrella.h"
-
-  export *
-  module * { export * }
-}

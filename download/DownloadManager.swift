@@ -7,7 +7,7 @@
 
 import Foundation
 import M3U8Kit
-import TS2MP4
+import AVFoundation
 
 protocol DownloadManagerDelegate: AnyObject {
     func didDownloadDone(fileName: String)
@@ -63,12 +63,46 @@ class DownloadManager: DownloadManagerInteface {
     }
     
     private func mergeTs2Mp4(segementDownloadedUrl: [String]) {
-        let tsAssetList = segementDownloadedUrl.map { KMMediaAsset.asset(with: URL(string: $0), with: .TS) }
-        let tsToMP4ExportSession = KMMediaAssetExportSession(inputAssets: tsAssetList)
+        // Create an empty mutable composition
+        let composition = AVMutableComposition()
         
+        // Create a video track to hold the video assets
+        let videoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+        
+        // Create an audio track to hold the audio assets
+        let audioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+        
+        // TODO: maintaince for ios16
+        // Add the video and audio assets to the tracks
+        for tsFileURL in segementDownloadedUrl {
+            let asset = AVURLAsset(url: URL(string: tsFileURL)!)
+            let videoAssetTrack = asset.tracks(withMediaType: .video).first
+            let audioAssetTrack = asset.tracks(withMediaType: .audio).first
+            try! videoTrack?.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: asset.duration), of: videoAssetTrack!, at: CMTime.zero)
+            try! audioTrack?.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: asset.duration), of: audioAssetTrack!, at: CMTime.zero)
+        }
+
+        // Create an export session for the composition
+        let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality)!
+
+        // Output mov
         let documentsDirectoryURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let mp4FileURL = documentsDirectoryURL?.appendingPathComponent("test.mp4")
-        tsToMP4ExportSession?.outputAssets = [mp4FileURL]
+        let movFileURL = documentsDirectoryURL?.appendingPathComponent("test.mov")
+
+        // Set the output file type and URL
+        exportSession.outputFileType = .mov
+        exportSession.outputURL = movFileURL
+
+        // Export the composition to a new file
+        exportSession.exportAsynchronously {
+            // Check for success and handle any errors
+            if exportSession.status == .completed {
+                print("Successfully exported to: \(movFileURL)")
+            } else {
+                print("Export failed with error: \(exportSession.error?.localizedDescription ?? "Unknown Error")")
+            }
+        }
+
     }
     
     private func download(url: URL, index: UInt, indentify: String, completion: @escaping (_ path: String) -> Void) {
