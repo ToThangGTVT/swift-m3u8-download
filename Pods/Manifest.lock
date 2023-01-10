@@ -1,20 +1,20 @@
 PODS:
-  - Alamofire (5.6.4)
   - M3U8Kit (1.0.2)
+  - mobile-ffmpeg-min-gpl (4.4)
 
 DEPENDENCIES:
-  - Alamofire
   - M3U8Kit
+  - mobile-ffmpeg-min-gpl
 
 SPEC REPOS:
   trunk:
-    - Alamofire
     - M3U8Kit
+    - mobile-ffmpeg-min-gpl
 
 SPEC CHECKSUMS:
-  Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
   M3U8Kit: 6a0d55ba2e62e146f34f53276d7c3aa78ed4fc00
+  mobile-ffmpeg-min-gpl: 123f47d1bd9ec498688627a5be2621bcd6e88a01
 
-PODFILE CHECKSUM: 1d490a1a387d852d9a32aaffb9216cf02d638f77
+PODFILE CHECKSUM: f0dd965cdcf132a5447db7908128123607f7346f
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

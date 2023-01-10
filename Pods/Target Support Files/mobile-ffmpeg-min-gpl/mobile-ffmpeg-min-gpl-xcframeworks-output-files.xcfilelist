@@ -1,0 +1,12 @@
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/mobileffmpeg.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libavcodec.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libavdevice.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libavfilter.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libavformat.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libavutil.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libswresample.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libswscale.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/libvidstab.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/x264.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/x265.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/mobile-ffmpeg-min-gpl/xvidcore.framework

@@ -8,6 +8,7 @@
 import Foundation
 import M3U8Kit
 import AVFoundation
+import mobileffmpeg
 
 protocol DownloadManagerDelegate: AnyObject {
     func didDownloadDone(fileName: String)
@@ -25,10 +26,12 @@ class DownloadManager: DownloadManagerInteface {
     
     weak var deleagate: DownloadManagerDelegate?
     let dispatchGroup = DispatchGroup()
+    let documentsDirectoryURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+
     
     func downloadFile(m3u8_url url: String, indentify: String) {
         guard let listSegment = getSegmentList(url: url) else { return }
-        var segementDownloaded = [String]()
+        var segementDownloaded = [URL]()
         for i in (0 ..< listSegment.count) {
             dispatchGroup.enter()
             let segment = listSegment.segmentInfo(at: i)
@@ -40,7 +43,9 @@ class DownloadManager: DownloadManagerInteface {
             }
         }
         dispatchGroup.wait()
-        UserDefaults.standard.set(segementDownloaded, forKey: indentify)
+
+        mergeTs2Mp4(segementDownloadedUrl: segementDownloaded, destinationFile: (documentsDirectoryURL?.appendingPathComponent("\(UUID.init().uuidString)-test.mp4"))!)
+        removeAllTsAfterDownload(urls: segementDownloaded)
         deleagate?.didDownloadDone(fileName: "fileName")
     }
     
@@ -62,51 +67,31 @@ class DownloadManager: DownloadManagerInteface {
         return M3U8SegmentInfoList()
     }
     
-    private func mergeTs2Mp4(segementDownloadedUrl: [String]) {
-        // Create an empty mutable composition
-        let composition = AVMutableComposition()
-        
-        // Create a video track to hold the video assets
-        let videoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
-        
-        // Create an audio track to hold the audio assets
-        let audioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
-        
-        // TODO: maintaince for ios16
-        // Add the video and audio assets to the tracks
-        for tsFileURL in segementDownloadedUrl {
-            let asset = AVURLAsset(url: URL(string: tsFileURL)!)
-            let videoAssetTrack = asset.tracks(withMediaType: .video).first
-            let audioAssetTrack = asset.tracks(withMediaType: .audio).first
-            try! videoTrack?.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: asset.duration), of: videoAssetTrack!, at: CMTime.zero)
-            try! audioTrack?.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: asset.duration), of: audioAssetTrack!, at: CMTime.zero)
+    private func mergeTs2Mp4(segementDownloadedUrl: [URL], destinationFile: URL) {
+        var command = "-i concat:"
+        for fileUrl in segementDownloadedUrl {
+            command += "\(fileUrl)" + "|"
         }
-
-        // Create an export session for the composition
-        let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality)!
-
-        // Output mov
-        let documentsDirectoryURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let movFileURL = documentsDirectoryURL?.appendingPathComponent("test.mov")
-
-        // Set the output file type and URL
-        exportSession.outputFileType = .mov
-        exportSession.outputURL = movFileURL
-
-        // Export the composition to a new file
-        exportSession.exportAsynchronously {
-            // Check for success and handle any errors
-            if exportSession.status == .completed {
-                print("Successfully exported to: \(movFileURL)")
-            } else {
-                print("Export failed with error: \(exportSession.error?.localizedDescription ?? "Unknown Error")")
-            }
-        }
-
+        let range = command.index(command.endIndex, offsetBy: -1)..<command.endIndex
+        command.removeSubrange(range)
+        command += " -codec copy \(destinationFile)"
+        MobileFFmpeg.execute(command)
+        print("===== Merge done =====")
     }
     
-    private func download(url: URL, index: UInt, indentify: String, completion: @escaping (_ path: String) -> Void) {
-        let documentsDirectoryURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+    private func removeAllTsAfterDownload(urls: [URL]) {
+        for url in urls {
+            if FileManager.default.fileExists(atPath: url.path) {
+                do {
+                    try FileManager.default.removeItem(at: url)
+                } catch {
+                    print("Could not delete file, probably read-only filesystem")
+                }
+            }
+        }
+    }
+    
+    private func download(url: URL, index: UInt, indentify: String, completion: @escaping (_ path: URL) -> Void) {
         let fileURL = documentsDirectoryURL?.appendingPathComponent(String(index) +  url.lastPathComponent)
         guard let fileURL = fileURL else { return }
         if FileManager.default.fileExists(atPath: fileURL.absoluteString) {
@@ -118,7 +103,7 @@ class DownloadManager: DownloadManagerInteface {
                 do {
                     try FileManager.default.moveItem(at: localURL, to: fileURL)
                     print("save done")
-                    completion(fileURL.absoluteString)
+                    completion(fileURL)
                     self.dispatchGroup.leave()
                     return
                 } catch let e {
@@ -130,5 +115,4 @@ class DownloadManager: DownloadManagerInteface {
         }
         downloadTask.resume()
     }
-
 }
